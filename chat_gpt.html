@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>Регистрация</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .card {
+    background: #fff;
+    padding: 40px;
+    border-radius: 16px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    width: 100%;
+    max-width: 400px;
+  }
+  h1 {
+    text-align: center;
+    margin-bottom: 8px;
+    color: #333;
+    font-size: 26px;
+  }
+  .subtitle {
+    text-align: center;
+    color: #888;
+    margin-bottom: 28px;
+    font-size: 14px;
+  }
+  label {
+    display: block;
+    margin-bottom: 6px;
+    color: #555;
+    font-size: 14px;
+    font-weight: 600;
+  }
+  input {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 18px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 15px;
+    transition: border-color 0.2s;
+  }
+  input:focus {
+    outline: none;
+    border-color: #667eea;
+  }
+  button {
+    width: 100%;
+    padding: 14px;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.1s;
+  }
+  button:hover { transform: translateY(-2px); }
+  button:active { transform: translateY(0); }
+
+  /* ===== BSOD ===== */
+  #bsod {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: #0078d7;
+    color: #fff;
+    z-index: 99999;
+    padding: 8vh 10vw;
+    font-family: 'Segoe UI', sans-serif;
+  }
+  #bsod.show { display: block; }
+  #bsod .sad {
+    font-size: 90px;
+    font-weight: 300;
+    margin-bottom: 24px;
+    line-height: 1;
+  }
+  #bsod .msg {
+    font-size: 26px;
+    font-weight: 300;
+    margin-bottom: 40px;
+    max-width: 800px;
+    line-height: 1.4;
+  }
+  #bsod .progress {
+    font-size: 18px;
+    margin-bottom: 40px;
+  }
+  #bsod .info {
+    font-size: 14px;
+    line-height: 1.7;
+    opacity: 0.9;
+  }
+  #bsod .info b { font-weight: 600; }
+  #bsod .qr {
+    margin-top: 30px;
+    font-size: 14px;
+    opacity: 0.9;
+  }
+  #prankText {
+    position: fixed;
+    inset: 0;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 100000;
+    pointer-events: none;
+  }
+  #prankText.show { display: flex; }
+  #prankText span {
+    font-size: 9vw;
+    font-weight: 900;
+    color: #ff2d2d;
+    text-shadow: 0 0 30px #000, 0 0 10px #fff;
+    font-family: Impact, sans-serif;
+    animation: shake 0.4s infinite;
+    transform: rotate(-8deg);
+    letter-spacing: 4px;
+  }
+  @keyframes shake {
+    0%,100% { transform: rotate(-8deg) translate(0,0); }
+    25% { transform: rotate(-6deg) translate(-6px,4px); }
+    50% { transform: rotate(-10deg) translate(6px,-4px); }
+    75% { transform: rotate(-7deg) translate(-4px,-6px); }
+  }
+</style>
+</head>
+<body>
+
+<div class="card">
+  <h1>Создать аккаунт</h1>
+  <p class="subtitle">Присоединяйтесь к нам</p>
+  <form id="regForm">
+    <label>Имя пользователя</label>
+    <input type="text" placeholder="Введите имя" required>
+    <label>Email</label>
+    <input type="email" placeholder="you@example.com" required>
+    <label>Пароль</label>
+    <input type="password" placeholder="••••••••" required>
+    <label>Повторите пароль</label>
+    <input type="password" placeholder="••••••••" required>
+    <button type="submit">Зарегистрироваться</button>
+  </form>
+</div>
+
+<!-- BSOD -->
+<div id="bsod">
+  <div class="sad">:(</div>
+  <div class="msg">На вашем ПК возникла проблема, и его необходимо перезагрузить. Мы собираем данные об ошибке, после чего выполним перезагрузку.</div>
+  <div class="progress">0% завершено</div>
+  <div class="info">
+    Если вы хотите узнать больше, можете поискать в интернете код ошибки: <b>CRITICAL_PROCESS_DIED</b><br><br>
+    Если вы позвоните в службу поддержки, сообщите им следующие сведения:<br><br>
+    <b>Код остановки:</b> CRITICAL_PROCESS_DIED<br>
+    <b>Ошибка:</b> 0x000000EF
+  </div>
+  <div class="qr">Для получения дополнительной информации посетите: https://www.windows.com/stopcode</div>
+</div>
+
+<!-- Пранк-текст -->
+<div id="prankText"><span>ДУРАК АХАХАХАХ</span></div>
+
+<script>
+  // Звук через Web Audio API (не нужен mp3-файл)
+  function playSound() {
+    try {
+      const ctx = new (window.AudioContext || window.webkitAudioContext)();
+      // Смешной "спускающийся" звук
+      const notes = [880, 740, 620, 520, 440, 370, 310, 260];
+      let t = ctx.currentTime;
+      notes.forEach((freq) => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'square';
+        osc.frequency.value = freq;
+        gain.gain.setValueAtTime(0.15, t);
+        gain.gain.exponentialRampToValueAtTime(0.001, t + 0.18);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(t);
+        osc.stop(t + 0.2);
+        t += 0.18;
+      });
+      // Финальный "смех" — быстрые высокие ноты
+      for (let i = 0; i < 12; i++) {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sawtooth';
+        osc.frequency.value = 500 + (i % 2) * 300;
+        gain.gain.setValueAtTime(0.12, t);
+        gain.gain.exponentialRampToValueAtTime(0.001, t + 0.08);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(t);
+        osc.stop(t + 0.1);
+        t += 0.09;
+      }
+    } catch(e) {
+      console.log('Звук не сработал:', e);
+    }
+  }
+
+  // Прогресс 0% -> 100%
+  function runProgress() {
+    const el = document.querySelector('#bsod .progress');
+    let p = 0;
+    const iv = setInterval(() => {
+      p += Math.floor(Math.random() * 4) + 1;
+      if (p >= 100) {
+        p = 100;
+        clearInterval(iv);
+        // После 100% — показываем "ДУРАК"
+        setTimeout(() => {
+          document.getElementById('bsod').classList.remove('show');
+          document.getElementById('prankText').classList.add('show');
+        }, 800);
+      }
+      el.textContent = p + '% завершено';
+    }, 220);
+  }
+
+  document.getElementById('regForm').addEventListener('submit', (e) => {
+    e.preventDefault(); // никуда не отправляем
+    document.getElementById('bsod').classList.add('show');
+    playSound();
+    runProgress();
+  });
+
+  // Клик по "ДУРАК" — закрыть всё и вернуть форму
+  document.getElementById('prankText').addEventListener('click', () => {
+    document.getElementById('prankText').classList.remove('show');
+  });
+</script>
+</body>
+</html>
